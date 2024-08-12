@@ -68,6 +68,8 @@ def search_subdomains(domain):
             print(f"{Fore.GREEN}Found {len(subdomains)} subdomains:{Style.RESET_ALL}")
             for subdomain in subdomains:
                 print(subdomain)
+                with open(f"results/{domain}/subdomains.txt", "a") as f:
+                    f.write(subdomain + "\n")
             return subdomains
         else:
             print(f"{Fore.RED}Failed to retrieve subdomains from crt.sh{Style.RESET_ALL}")
@@ -85,8 +87,13 @@ def search_shodan(ip, shodan_api_key):
         print(f"{Fore.GREEN}Information from Shodan about {ip}:{Style.RESET_ALL}")
         print(f"Organization: {result.get('org', 'N/A')}")
         print(f"Operating System: {result.get('os', 'N/A')}")
+        with open(f"results/{domain}/shodan.txt", "a") as f:
+            f.write(f"Organization: {result.get('org', 'N/A')}\n")
+            f.write(f"Operating System: {result.get('os', 'N/A')}\n")
         for item in result['data']:
             print(f"Port: {item['port']} - Banner: {item['data']}")
+            with open(f"results/{domain}/shodan.txt", "a") as f:
+                f.write(f"Port: {item['port']} - Banner: {item['data']}\n")
     except shodan.APIError as e:
         print(f"{Fore.RED}Error searching Shodan: {e}{Style.RESET_ALL}")
 
@@ -98,6 +105,8 @@ def run_masscan(ip, ports="1-65535"):
         result = subprocess.run(masscan_cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output = result.stdout.decode('utf-8')
         print(output)
+        with open(f"results/{domain}/masscan.txt", "a") as f:
+            f.write(output)
         return output
     except subprocess.CalledProcessError as e:
         print(f"{Fore.RED}Error running Masscan: {e}{Style.RESET_ALL}")
@@ -111,11 +120,14 @@ def run_nuclei(ip):
         result = subprocess.run(nuclei_cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output = result.stdout.decode('utf-8')
         print(output)
+        with open(f"results/{domain}/nuclei.txt", "a") as f:
+            f.write(output)
     except subprocess.CalledProcessError as e:
         print(f"{Fore.RED}Error running Nuclei: {e}{Style.RESET_ALL}")
 
 # Main function to execute the recon process
 def perform_recon(domain, shodan_api_key):
+    os.makedirs(f"results/{domain}", exist_ok=True)  # Create results directory
     ip = get_ip_address(domain)
     if ip:
         search_subdomains(domain)
