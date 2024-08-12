@@ -129,7 +129,7 @@ if __name__ == "__main__":
     install_external_tools()
 
     # Replace 'your_shodan_api_key' with your actual Shodan API key
-    shodan_api_key = "n24dpMs1SK8bWCFhZEz6JriVdxxw1tza"
+    shodan_api_key = "------------------------------------------------"
     
     domain = input(f"{Fore.CYAN}Enter the domain to perform recon on: {Style.RESET_ALL}")
     perform_recon(domain, shodan_api_key)
